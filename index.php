@@ -134,12 +134,11 @@
 
         <nav>
             <?php
-                $path = "./";
-                $dir = opendir($path); 
+                $dir = opendir("./"); 
                 while ($file = readdir($dir)) {
 
-                    if (is_dir($file) && !str_starts_with($file, ".")) {
-                        echo "<a href='$path/$file' class='page-card'>$file</a>";
+                    if ($file != "index.php" && !str_starts_with($file, ".")) {
+                        echo "<a href='$file' class='page-card'>$file</a>";
                     }
                 } 
                 closedir($dir);    
