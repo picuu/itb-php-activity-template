@@ -73,6 +73,7 @@
         }
 
         .page-card {
+            position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -89,6 +90,24 @@
 
         .page-card:hover {
             transform: scale(1.04);
+        }
+
+        .page-card:before {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+        }
+
+        .page-card.folder {
+            background-color: rgb(245 135 50 / .22);
+        }
+
+        .page-card.folder:before {
+            content: '📁';
+        }
+
+        .page-card.file:before {
+            content: '📄';
         }
 
         footer {
@@ -138,7 +157,9 @@
                 while ($file = readdir($dir)) {
 
                     if ($file != "index.php" && !str_starts_with($file, ".")) {
-                        echo "<a href='$file' class='page-card'>$file</a>";
+                        if (is_dir($file)) echo "<a href='$file' class='page-card folder'>$file</a>";
+                        else echo "<a href='$file' class='page-card file'>$file</a>";
+                        
                     }
                 } 
                 closedir($dir);    
