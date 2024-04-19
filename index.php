@@ -58,18 +58,49 @@
             height: 100vh;
         }
 
-        main h1 {
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 3rem;
+            width: min(1000px, 100% - 2rem);
+            margin-inline: auto;
+        }
+
+        .main-content > div {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .main-content form select {
+            padding: .5rem 1rem;
+            background-color: rgb(0 0 0 / .5);
+            border: none;
+            border-radius: .25rem;
+            font-family: inherit;
+        }
+
+        .main-content form button {
+            padding: .5rem 1rem;
+            background-color: rgb(128 128 128 / .65);
+            backdrop-filter: blur(10px);
+            border: none;
+            border-radius: .25rem;
+        }
+
+        .main-content form button:hover {
+            cursor: pointer;
+        }
+
+        .main-content h1 {
             font-size: 2.5rem;
             text-align: center;
-            margin-bottom: 3rem;
         }
         
         nav {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 2rem;
-            width: min(1000px, 100% - 2rem);
-            margin-inline: auto;
         }
 
         .page-card {
@@ -90,6 +121,7 @@
 
         .page-card:hover {
             transform: scale(1.04);
+            cursor: pointer;
         }
 
         .page-card:before {
@@ -108,6 +140,37 @@
 
         .page-card.file:before {
             content: '📄';
+        }
+
+        details {
+            position: relative;
+        }
+
+        summary::marker {
+            content: '';
+        }
+
+        details > ul {
+            position: absolute;
+            left: 0;
+            padding: 1rem;
+            margin-top: 5px;
+            width: 100%;
+            background-color: rgb(0 64 255 / .42);
+            backdrop-filter: blur(12px);
+            border-radius: .25rem;
+            z-index: 1;
+        }
+
+        details > ul li {
+            list-style: none;
+            text-decoration: underline;
+            text-decoration-color: transparent;
+            transition: text-decoration-color .2s ease-in-out;
+        }
+
+        details > ul li:hover {
+            text-decoration-color: currentColor;
         }
 
         footer {
@@ -154,23 +217,48 @@
     </header>
 
     <main>
-        <h1>Continguts del projecte</h1>
-
-        <nav>
-            <?php
-                $dir = opendir("./"); 
-                while ($file = readdir($dir)) {
-
-                    if ($file != "index.php" && !str_starts_with($file, ".")) {
-                        if (is_dir($file)) echo "<a href='$file' class='page-card folder'>$file</a>";
-                        else echo "<a href='$file' class='page-card file'>$file</a>";
-                        
-                    }
-                } 
-                closedir($dir);    
-                clearstatcache();
-            ?>
-        </nav>
+        <div class="main-content">
+            <div>
+                <h1>Continguts del projecte</h1>
+        
+                <form id="filterForm">
+                    <select name="filter" id="filter">
+                        <option value="none">-- Selecciona un filtre</option>
+                        <option value="folder">No mostrar carpetes</option>
+                        <option value="file">No mostrar fitxers</option>
+                    </select>
+                    <button type="submit">Filtrar</button>
+                </form>
+            </div>
+    
+            <nav>
+                <?php
+                    $dir = opendir("./"); 
+                    while ($file = readdir($dir)) {
+    
+                        if ($file != "index.php" && !str_starts_with($file, ".")) {
+                            if (is_dir($file)) {
+                                echo "<details name='folder-content'>";
+                                echo "<summary class='page-card folder'>$file</summary>";
+                                echo "<ul>";
+                                $subdir = opendir($file);
+                                while ($subfile = readdir($subdir)) {
+                                    if ($subfile != "." && $subfile != "..") {
+                                        echo "<li><a href='./$file/$subfile'>$subfile</a></li>";
+                                    }
+                                }
+                                echo "</ul>";
+                                echo "</details>";
+                            }
+                            else echo "<a href='$file' class='page-card file'>$file</a>";
+                            
+                        }
+                    } 
+                    closedir($dir);    
+                    clearstatcache();
+                ?>
+            </nav>
+        </div>
     </main>
 
     <footer>
@@ -205,5 +293,33 @@
             </div>
         </div>
     </footer>
+
+    <script>
+        const filterForm = document.getElementById("filterForm")
+        filterForm.addEventListener("submit", (e) => {
+            e.preventDefault()
+            resetFilter()
+
+            const filter = document.getElementById("filter").value
+
+            if (filter == "none") return
+
+            const elementsToHide = document.getElementsByClassName(filter)
+            for (e of elementsToHide) {
+                e.style.display = "none"
+            }
+        })
+
+        function resetFilter() {
+            const folders = document.getElementsByClassName("folder")
+            const files = document.getElementsByClassName("file")
+            for (e of folders) {
+                e.style.display = "flex"
+            }
+            for (e of files) {
+                e.style.display = "flex"
+            }
+        }
+    </script>
 </body>
 </html>
