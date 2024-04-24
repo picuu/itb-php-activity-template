@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="cat">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -53,26 +53,58 @@
 
         main {
             padding: 8rem 0;
-            background: url(.img/bg.webp) center no-repeat;
+            background: url(img/bg.webp) center no-repeat;
             background-size: 100%;
             height: 100vh;
         }
 
-        main h1 {
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 3rem;
+            width: min(1000px, 100% - 2rem);
+            margin-inline: auto;
+        }
+
+        .main-content > div {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .main-content form select {
+            padding: .5rem 1rem;
+            background-color: rgb(0 0 0 / .5);
+            border: none;
+            border-radius: .25rem;
+            font-family: inherit;
+        }
+
+        .main-content form button {
+            padding: .5rem 1rem;
+            background-color: rgb(128 128 128 / .65);
+            backdrop-filter: blur(10px);
+            border: none;
+            border-radius: .25rem;
+        }
+
+        .main-content form button:hover {
+            cursor: pointer;
+        }
+
+        .main-content h1 {
             font-size: 2.5rem;
             text-align: center;
-            margin-bottom: 3rem;
         }
         
         nav {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 2rem;
-            width: min(1000px, 100% - 2rem);
-            margin-inline: auto;
         }
 
         .page-card {
+            position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -89,6 +121,56 @@
 
         .page-card:hover {
             transform: scale(1.04);
+            cursor: pointer;
+        }
+
+        .page-card:before {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+        }
+
+        .page-card.folder {
+            background-color: rgb(0 200 255 / .22);
+        }
+
+        .page-card.folder:before {
+            content: '📁';
+        }
+
+        .page-card.file:before {
+            content: '📄';
+        }
+
+        details {
+            position: relative;
+        }
+
+        summary::marker {
+            content: '';
+        }
+
+        details > ul {
+            position: absolute;
+            left: 0;
+            padding: 1rem;
+            margin-top: 5px;
+            width: 100%;
+            background-color: rgb(0 64 255 / .42);
+            backdrop-filter: blur(12px);
+            border-radius: .25rem;
+            z-index: 1;
+        }
+
+        details > ul li {
+            list-style: none;
+            text-decoration: underline;
+            text-decoration-color: transparent;
+            transition: text-decoration-color .2s ease-in-out;
+        }
+
+        details > ul li:hover {
+            text-decoration-color: currentColor;
         }
 
         footer {
@@ -110,6 +192,7 @@
 
         .footer-content > div {
             display: flex;
+            align-items: center;
             gap: 1rem;
         }
 
@@ -119,38 +202,70 @@
             aspect-ratio: 1 / 1;
             padding: 4px;
         }
+
+        .credits {
+            font-size: .75rem;
+        }
     </style>
 </head>
 <body>
     <header>
         <div class="header-content">
-            <img src=".img/ITB_logo.webp" alt="logo ITB" />
-            <strong>&lt;El teu nom aquí&gt;</strong>
+            <a href="https://itecbcn.eu" target="_blank" rel="noopener"><img src="img/ITB_logo.webp" alt="logo ITB" /></a>
+            <strong>&lt;Ulises Castell i Carlos Capó&gt;</strong>
         </div>
     </header>
 
     <main>
-        <h1>Activitat 0: Template PHP</h1>
-
-        <nav>
-            <?php
-                $dir = opendir("./"); 
-                while ($file = readdir($dir)) {
-
-                    if ($file != "index.php" && !str_starts_with($file, ".")) {
-                        echo "<a href='$file' class='page-card'>$file</a>";
-                    }
-                } 
-                closedir($dir);    
-                clearstatcache();
-            ?>
-        </nav>
+        <div class="main-content">
+            <div>
+                <h1>Continguts del projecte</h1>
+        
+                <form id="filterForm">
+                    <select name="filter" id="filter">
+                        <option value="none">-- Selecciona un filtre</option>
+                        <option value="folder-filter">No mostrar carpetes</option>
+                        <option value="file-filter">No mostrar fitxers</option>
+                    </select>
+                    <button type="submit">Filtrar</button>
+                </form>
+            </div>
+    
+            <nav>
+                <?php
+                    $dir = opendir("./"); 
+                    while ($file = readdir($dir)) {
+    
+                        if ($file != "index.php" && !str_starts_with($file, ".")) {
+                            if (is_dir($file)) {
+                                echo "<details name='folder-content' class='folder-filter'>";
+                                echo "<summary class='page-card folder'>$file</summary>";
+                                echo "<ul>";
+                                $subdir = opendir($file);
+                                while ($subfile = readdir($subdir)) {
+                                    if ($subfile != "." && $subfile != "..") {
+                                        echo "<li><a href='./$file/$subfile'>$subfile</a></li>";
+                                    }
+                                }
+                                echo "</ul>";
+                                echo "</details>";
+                            }
+                            else echo "<a href='$file' class='page-card file file-filter'>$file</a>";
+                            
+                        }
+                    } 
+                    closedir($dir);    
+                    clearstatcache();
+                ?>
+            </nav>
+        </div>
     </main>
 
     <footer>
         <div class="footer-content">
-            <small>Institut Tecnològic de Barcelona 2024</small>
+            <small><a href="https://itecbcn.eu" target="_blank" rel="noopener">Institut Tecnològic de Barcelona 2024</a></small>
             <div>
+                <span class="credits">Made by <a href="https://carloscapo.com" target="_blank" rel="noopener">@carloscapo</a></span>
                 <a href="https://github.com/picuu/itb-php-activity-template/" target="_blank" rel="noopener noreferrer">
                     <svg viewBox="0 0 256 250" width="256" height="250" fill="currentColor" preserveAspectRatio="xMidYMid">
                         <path d="M128.001 0C57.317 0 0 57.307 0 128.001c0 56.554 36.676 104.535 87.535 121.46 6.397 1.185 8.746-2.777 8.746-6.158 0-3.052-.12-13.135-.174-23.83-35.61 7.742-43.124-15.103-43.124-15.103-5.823-14.795-14.213-18.73-14.213-18.73-11.613-7.944.876-7.78.876-7.78 12.853.902 19.621 13.19 19.621 13.19 11.417 19.568 29.945 13.911 37.249 10.64 1.149-8.272 4.466-13.92 8.127-17.116-28.431-3.236-58.318-14.212-58.318-63.258 0-13.975 5-25.394 13.188-34.358-1.329-3.224-5.71-16.242 1.24-33.874 0 0 10.749-3.44 35.21 13.121 10.21-2.836 21.16-4.258 32.038-4.307 10.878.049 21.837 1.47 32.066 4.307 24.431-16.56 35.165-13.12 35.165-13.12 6.967 17.63 2.584 30.65 1.255 33.873 8.207 8.964 13.173 20.383 13.173 34.358 0 49.163-29.944 59.988-58.447 63.157 4.591 3.972 8.682 11.762 8.682 23.704 0 17.126-.148 30.91-.148 35.126 0 3.407 2.304 7.398 8.792 6.14C219.37 232.5 256 184.537 256 128.002 256 57.307 198.691 0 128.001 0Zm-80.06 182.34c-.282.636-1.283.827-2.194.39-.929-.417-1.45-1.284-1.15-1.922.276-.655 1.279-.838 2.205-.399.93.418 1.46 1.293 1.139 1.931Zm6.296 5.618c-.61.566-1.804.303-2.614-.591-.837-.892-.994-2.086-.375-2.66.63-.566 1.787-.301 2.626.591.838.903 1 2.088.363 2.66Zm4.32 7.188c-.785.545-2.067.034-2.86-1.104-.784-1.138-.784-2.503.017-3.05.795-.547 2.058-.055 2.861 1.075.782 1.157.782 2.522-.019 3.08Zm7.304 8.325c-.701.774-2.196.566-3.29-.49-1.119-1.032-1.43-2.496-.726-3.27.71-.776 2.213-.558 3.315.49 1.11 1.03 1.45 2.505.701 3.27Zm9.442 2.81c-.31 1.003-1.75 1.459-3.199 1.033-1.448-.439-2.395-1.613-2.103-2.626.301-1.01 1.747-1.484 3.207-1.028 1.446.436 2.396 1.602 2.095 2.622Zm10.744 1.193c.036 1.055-1.193 1.93-2.715 1.95-1.53.034-2.769-.82-2.786-1.86 0-1.065 1.202-1.932 2.733-1.958 1.522-.03 2.768.818 2.768 1.868Zm10.555-.405c.182 1.03-.875 2.088-2.387 2.37-1.485.271-2.861-.365-3.05-1.386-.184-1.056.893-2.114 2.376-2.387 1.514-.263 2.868.356 3.061 1.403Z" />
@@ -178,5 +293,33 @@
             </div>
         </div>
     </footer>
+
+    <script>
+        const filterForm = document.getElementById("filterForm")
+        filterForm.addEventListener("submit", (e) => {
+            e.preventDefault()
+            resetFilter()
+
+            const filter = document.getElementById("filter").value
+
+            if (filter == "none") return
+
+            const elementsToHide = document.getElementsByClassName(filter)
+            for (e of elementsToHide) {
+                e.style.display = "none"
+            }
+        })
+
+        function resetFilter() {
+            const folders = document.getElementsByClassName("folder-filter")
+            const files = document.getElementsByClassName("file-filter")
+            for (e of folders) {
+                e.style.display = "flex"
+            }
+            for (e of files) {
+                e.style.display = "flex"
+            }
+        }
+    </script>
 </body>
 </html>
