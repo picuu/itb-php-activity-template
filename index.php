@@ -53,7 +53,7 @@
 
         main {
             padding: 8rem 0;
-            background: url(.img/bg.webp) center no-repeat;
+            background: url(img/bg.webp) center no-repeat;
             background-size: 100%;
             height: 100vh;
         }
@@ -211,8 +211,8 @@
 <body>
     <header>
         <div class="header-content">
-            <a href="https://itecbcn.eu" target="_blank" rel="noopener"><img src=".img/ITB_logo.webp" alt="logo ITB" /></a>
-            <strong>&lt;El teu nom aquí&gt;</strong>
+            <a href="https://itecbcn.eu" target="_blank" rel="noopener"><img src="img/ITB_logo.webp" alt="logo ITB" /></a>
+            <strong>&lt;Ulises Castell i Carlos Capó&gt;</strong>
         </div>
     </header>
 
@@ -224,8 +224,8 @@
                 <form id="filterForm">
                     <select name="filter" id="filter">
                         <option value="none">-- Selecciona un filtre</option>
-                        <option value="folder">No mostrar carpetes</option>
-                        <option value="file">No mostrar fitxers</option>
+                        <option value="folder-filter">No mostrar carpetes</option>
+                        <option value="file-filter">No mostrar fitxers</option>
                     </select>
                     <button type="submit">Filtrar</button>
                 </form>
@@ -238,7 +238,7 @@
     
                         if ($file != "index.php" && !str_starts_with($file, ".")) {
                             if (is_dir($file)) {
-                                echo "<details name='folder-content'>";
+                                echo "<details name='folder-content' class='folder-filter'>";
                                 echo "<summary class='page-card folder'>$file</summary>";
                                 echo "<ul>";
                                 $subdir = opendir($file);
@@ -250,7 +250,7 @@
                                 echo "</ul>";
                                 echo "</details>";
                             }
-                            else echo "<a href='$file' class='page-card file'>$file</a>";
+                            else echo "<a href='$file' class='page-card file file-filter'>$file</a>";
                             
                         }
                     } 
@@ -311,8 +311,8 @@
         })
 
         function resetFilter() {
-            const folders = document.getElementsByClassName("folder")
-            const files = document.getElementsByClassName("file")
+            const folders = document.getElementsByClassName("folder-filter")
+            const files = document.getElementsByClassName("file-filter")
             for (e of folders) {
                 e.style.display = "flex"
             }
